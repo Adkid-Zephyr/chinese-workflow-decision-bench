@@ -2,9 +2,9 @@
 
 一个可复用的中文工作流分类benchmark。固定输入、提示与标签，分别报告分类质量、误生成任务和真实调用延迟。Jev与Laya是首批参测模型。
 
-![CWDB-64 成绩图](assets/scorecard.png)
+![CWDB-64 成绩图](assets/scorecard-zh.png)
 
-[完整成绩](RESULTS.md) · [原因分析与环境排查](docs/ANALYSIS.md) · [接入其他分类器](docs/ADDING_MODELS.md) · [可下载SVG](assets/scorecard.svg)
+[完整成绩](RESULTS.md) · [原因分析与环境排查](docs/ANALYSIS.md) · [接入其他分类器](docs/ADDING_MODELS.md) · [可下载SVG](assets/scorecard-zh.svg)
 
 > 已做小规模环境复查：8例 × 2种提示，CPU与MPS的16次标签和返回概率一致；权重哈希匹配。不能据此证明Jev的预训练更强，详见分析报告。
 
@@ -12,11 +12,24 @@
 
 ## 结果
 
+<!-- quick-table-zh:start -->
+
+| 测试方式 | Jev 正确分类 | Laya 正确分类 | Jev 耗时中位数 | Laya 耗时中位数 |
+|---|---:|---:|---:|---:|
+| 单选择题 | **64/64（100.00%）** | 20/64（31.25%） | 253 毫秒 | 151 毫秒 |
+| 四问组合 | **63/64（98.44%）** | 18/64（28.12%） | 250 毫秒 | 415 毫秒 |
+
+单选择题：直接四选一。四问组合：分别判断相关性、行动、紧急性、资料价值，再由固定规则分类。
+
+64 个合成场景，准确率取首次冻结结果。Laya 为 M4 GPU 本地运行，Jev 为云端 API（含网络往返）；不是同硬件比较，也不代表真实业务总体准确率。
+
+<!-- quick-table-zh:end -->
+
 完整汇总见 [RESULTS.md](RESULTS.md)，机器可读指标见 [summary.json](results/v1/summary.json)，逐条结果见 [comparison.csv](results/v1/comparison.csv)。原始响应、耗时、重复编号和截断诊断保留在 [results/v1](results/v1)。
 
 ## 场景分项
 
-![场景成绩](assets/scenario-breakdown.png)
+![场景成绩](assets/scenario-breakdown-zh.png)
 
 ## 测什么
 
@@ -112,3 +125,9 @@ python evaluate.py --adapter my_classifier:create --model-id my-model-v1 \
 先离线试跑 `adapters.constant:create` 可验证16/64的常量基线。完整协议、失败计分与提交要求见[接入说明](docs/ADDING_MODELS.md)。原有`bench.py`保留为v1两模型记录的复现入口，冻结数据与原始结果没有改动。
 
 成绩图由`python plot_results.py`从真实summary生成，需另装`requirements-viz.txt`。PNG便于分享，SVG便于编辑和高清导出。仓库与Artificial Analysis无关联，也不声称具有其评测覆盖或独立审计规模。
+
+## 中文图表下载
+
+[中文成绩图 PNG](assets/scorecard-zh.png) · [中文表格 PNG](assets/comparison-table-zh.png) · [中文分项图 PNG](assets/scenario-breakdown-zh.png) · [英文成绩图](assets/scorecard.png)
+
+中文图表生成：`python plot_results.py --lang zh`。需安装冬青黑体（macOS）或 Noto Sans CJK（Linux）；SVG 已将文字转为路径，查看时无需安装字体。

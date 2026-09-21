@@ -7,7 +7,7 @@ with (root/'comparison.csv').open('w',newline='') as stream:
  w=csv.writer(stream);w.writerow(['backend','mode','case_id','family','repeat','expected','predicted','status','elapsed_ms','review','request_sha256'])
  for name,rows in allrows.items():
   for r in sorted(rows,key=lambda r:(r['mode'],r['id'],r['repeat'])):w.writerow([name,r['mode'],r['id'],r['family'],r['repeat'],r['expected'],r.get('predicted','ERROR'),r['status'],r.get('elapsed_ms'),r.get('review'),r['request_sha256']])
-lines=['# 测试结果 v1','', '![成绩图](assets/scorecard.png)', '', '[环境排查与原因分析](docs/ANALYSIS.md) · [接入新分类器](docs/ADDING_MODELS.md)', '', '## 结论及边界','本次64个合成工作场景中，Jev对任务归属、状态和上下文的判断更符合冻结标签；Laya单选择题的本地延迟较低，但误生成待办较多。这不是通用模型能力或同硬件速度排名。','', '所有质量数字取预先约定的第0次重复，每模式64例。延迟取3次重复的192个请求；每个后端384次计时请求加2次预热，合计772次调用。全部计时请求成功。','', '|后端 / 提示|匹配预期|Macro-F1|误生成行动 / 32|漏掉行动 / 32|紧急召回 / 16|p50 ms|p95 ms|','|---|---:|---:|---:|---:|---:|---:|---:|']
+lines=['# 测试结果 v1','', '![成绩图](assets/scorecard-zh.png)', '', '[环境排查与原因分析](docs/ANALYSIS.md) · [接入新分类器](docs/ADDING_MODELS.md)', '', '## 结论及边界','本次64个合成工作场景中，Jev对任务归属、状态和上下文的判断更符合冻结标签；Laya单选择题的本地延迟较低，但误生成待办较多。这不是通用模型能力或同硬件速度排名。','', '所有质量数字取预先约定的第0次重复，每模式64例。延迟取3次重复的192个请求；每个后端384次计时请求加2次预热，合计772次调用。全部计时请求成功。','', '|后端 / 提示|匹配预期|Macro-F1|误生成行动 / 32|漏掉行动 / 32|紧急召回 / 16|p50 ms|p95 ms|','|---|---:|---:|---:|---:|---:|---:|---:|']
 for name in ['jev','laya']:
  for mode,r in s[name].items():lines.append(f"|{name} / {mode}|{r['correct']}/64|{r['macro_f1']:.3f}|{r['false_action_count']}/32|{r['missed_action_count']}/32|{r['urgent_recalled']}/16|{r['timing']['p50_ms']:.1f}|{r['timing']['p95_ms']:.1f}|")
 lines+=['','“误生成行动”指预期为valuable/noise却输出urgent/todo；“漏掉行动”指预期urgent/todo却输出非行动或请求失败。紧急召回必须输出urgent。此处优先衡量工作流影响，不仅看整体准确率。','', '## 重复运行','三次使用完全相同输入，打乱运行顺序。下面同时列出三次结果，避免首次得分掩盖波动。','', '|后端 / 提示|第0次|第1次|第2次|三次标签一致|','|---|---:|---:|---:|---:|']
@@ -30,4 +30,18 @@ lines+=['','## 概率诊断','以下只用于描述这64个合成标签，不是
 for name in ['jev','laya']:
  c=s[name]['choice']['choice_probability_diagnostics'];lines.append(f"|{name}|{c['multiclass_brier_sum']:.4f}|{c['ece_10_equal_width_bins']:.4f}|")
 lines+=['','## 审计与复现','- 输入及请求在模型调用前通过Git提交冻结：`0ce2d5f`。','- 完整数据哈希、标注政策见[data/manifest.json](data/manifest.json)。','- 运行元数据及所有原始响应见[results/v1](results/v1)。','- 由`python summarize.py`和`python render_report.py`生成；不需要API密钥即可重算结果。','- 测试设计参考此前少量探索，本轮并非盲测或独立人工标注。不要把64/64外推为真实工作中100%准确。']
+
+quick=['| 测试方式 | Jev 正确分类 | Laya 正确分类 | Jev 耗时中位数 | Laya 耗时中位数 |','|---|---:|---:|---:|---:|']
+for mode,title in [('choice','单选择题'),('four_noul','四问组合')]:
+ a,b=s['jev'][mode],s['laya'][mode]
+ quick.append(f"| {title} | **{a['correct']}/64（{a['accuracy']*100:.2f}%）** | {b['correct']}/64（{b['accuracy']*100:.2f}%） | {a['timing']['p50_ms']:.0f} 毫秒 | {b['timing']['p50_ms']:.0f} 毫秒 |")
+quick+=['','单选择题：直接四选一。四问组合：分别判断相关性、行动、紧急性、资料价值，再由固定规则分类。','', '64 个合成场景，准确率取首次冻结结果。Laya 为 M4 GPU 本地运行，Jev 为云端 API（含网络往返）；不是同硬件比较，也不代表真实业务总体准确率。']
+quick_text='\n'.join(quick)
+(p/'docs/QUICK_TABLE_ZH.md').write_text('# 中文结果速览\n\n'+quick_text+'\n')
+readme=(p/'README.md').read_text();start='<!-- quick-table-zh:start -->';end='<!-- quick-table-zh:end -->'
+if start in readme:
+ before,rest=readme.split(start,1);_,after=rest.split(end,1)
+ (p/'README.md').write_text(before+start+'\n\n'+quick_text+'\n\n'+end+after)
+lines[lines.index('## 结论及边界'):lines.index('## 结论及边界')]=['## 中文速览','']+quick+['']
+
 (p/'RESULTS.md').write_text('\n'.join(lines)+'\n')
