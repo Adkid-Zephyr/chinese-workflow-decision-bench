@@ -1,0 +1,7 @@
+# Python 3.11 was used for the recorded run.
+httpx==0.28.1
+torch==2.14.0
+transformers==5.17.0
+huggingface_hub==1.32.0
+safetensors==0.8.0
+numpy==2.4.6

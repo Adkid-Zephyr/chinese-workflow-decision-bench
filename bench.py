@@ -1,5 +1,5 @@
 """Frozen Chinese workflow diagnostic. Keys are never saved in results."""
-import argparse,datetime,getpass,hashlib,json,os,platform,random,statistics,time
+import argparse,datetime,getpass,hashlib,json,os,platform,random,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 VIEWER={'name':'林工','role':'订单项目的后端开发负责人，负责订单API、Python服务和数据库；不负责前端、设计、财务，关注后端技术知识。'}
