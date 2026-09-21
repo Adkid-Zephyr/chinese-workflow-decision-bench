@@ -1,6 +1,6 @@
 # 接入其他分类器
 
-本仓库是**固定中文工作流分类任务**的可复用benchmark，不是可对任意任务直接排名的通用智力榜。Jev与Laya是首批参测模型，数据、协议与评分器不依赖二者。
+本仓库是**固定 Feishu 消息分类任务**的可复用benchmark，不是可对任意任务直接排名的通用智力榜。Jev与Laya是首批参测模型，数据、协议与评分器不依赖二者。
 
 标准track为`choice`：任何模型只需返回`urgent / todo / valuable / noise`之一。概率可选；没有概率时不计算Brier/ECE，也不伪造置信度。已有的`four_noul`是特定组合工作流track，应单独比较，不能与choice混成总分。
 

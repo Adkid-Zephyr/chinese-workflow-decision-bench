@@ -10,7 +10,7 @@ ROOT=Path(__file__).resolve().parent
 plt.rcParams.update({'font.family':'DejaVu Sans','font.size':11,'svg.fonttype':'path','axes.spines.top':False,'axes.spines.right':False,'axes.spines.left':False,'axes.edgecolor':'#d5dfe6','text.color':'#142d40','axes.labelcolor':'#425969','xtick.color':'#637786','ytick.color':'#142d40','savefig.facecolor':'#f7fafc'})
 
 ZH = {
- 'CHINESE WORKFLOW DECISION BENCH':'中文工作流分类基准 · CWDB-64',
+ 'FEISHU MESSAGE CLASSIFICATION BENCH':'Feishu 消息分类实测',
  'Can a classifier assign the right work?':'Jev vs Laya， 闭源分类器API与开源本地部署实测对比。',
  'v1  /  64 frozen synthetic scenarios  /  8 workflow families  /  768 timed requests':'v1  /  64 个冻结合成场景  /  8 类工作情境  /  768 次计时请求',
  'Accuracy ↑':'分类准确率 ↑', 'False actions ↓':'误生成任务数 ↓', 'Request latency ↓':'请求耗时 ↓',
@@ -52,7 +52,7 @@ def localize(fig, lang):
 
 def chinese_table(rows):
  fig,ax=plt.subplots(figsize=(15,5.7));fig.patch.set_facecolor('#f7fafc');ax.axis('off')
- fig.text(.04,.89,'中文工作流分类测试：Jev 与 Laya',fontsize=24,fontweight='bold')
+ fig.text(.04,.89,'Feishu 消息分类实测：Jev 与 Laya',fontsize=24,fontweight='bold')
  fig.text(.04,.80,'64 个合成场景 · 准确率取首次冻结结果 · 耗时取预热后的请求中位数',fontsize=12,color='#637786')
  cells=[]
  for index,label in enumerate(['单选择题','四问组合']):
@@ -68,7 +68,7 @@ def chinese_table(rows):
  fig.text(.04,.19,'单选择题：直接四选一。四问组合：分别判断相关性、行动、紧急性、资料价值，再由固定规则分类。',fontsize=11)
  fig.text(.04,.12,'Laya 为苹果 M4 GPU 本地运行；Jev 为云端 API，包含网络往返。小样本合成测试，不代表总体准确率。',fontsize=10,color='#637786')
  localize(fig,'zh')
- for suffix in ['png','svg']:fig.savefig(ROOT/f'assets/comparison-table-zh.{suffix}',dpi=170,metadata={'Creator':'CWDB-64'})
+ for suffix in ['png','svg']:fig.savefig(ROOT/f'assets/comparison-table-zh.{suffix}',dpi=170,metadata={'Creator':'Feishu Message Classification Bench'})
  plt.close(fig)
 
 def main(lang="en"):
@@ -78,7 +78,7 @@ def main(lang="en"):
  rows=[s[b][m] for b,m in entries];colors=['#2874c8','#2874c8','#16998d','#16998d'];y=np.arange(4)
  fig,axes=plt.subplots(1,3,figsize=(18,8.3),gridspec_kw={'width_ratios':[1.4,1,1.15]});fig.patch.set_facecolor('#f7fafc')
  fig.subplots_adjust(left=.225,right=.955,top=.69,bottom=.25,wspace=.29)
- fig.text(.035,.92,'CHINESE WORKFLOW DECISION BENCH',fontsize=14,fontweight='bold',color='#2874c8')
+ fig.text(.035,.92,'FEISHU MESSAGE CLASSIFICATION BENCH',fontsize=14,fontweight='bold',color='#2874c8')
  fig.text(.035,.845,'Can a classifier assign the right work?',fontsize=29,fontweight='bold')
  fig.text(.035,.787,'v1  /  64 frozen synthetic scenarios  /  8 workflow families  /  768 timed requests',fontsize=13,color='#637786')
  for ax in axes:
@@ -100,7 +100,7 @@ def main(lang="en"):
  fig.text(.035,.102,'Laya: Apple M4 MPS, local. Jev: remote API including network. These are deployment paths, not a same-hardware comparison.',fontsize=10,color='#637786')
  fig.text(.035,.063,'Synthetic, AI-assisted diagnostic — not a general classifier or intelligence ranking.  •  github.com/Adkid-Zephyr/chinese-workflow-decision-bench',fontsize=10,color='#637786')
  localize(fig,lang)
- for suffix in ['png','svg']:fig.savefig(ROOT/f"assets/scorecard{'-zh' if lang=='zh' else ''}.{suffix}",dpi=170,metadata={'Creator':'Chinese Workflow Decision Bench'})
+ for suffix in ['png','svg']:fig.savefig(ROOT/f"assets/scorecard{'-zh' if lang=='zh' else ''}.{suffix}",dpi=170,metadata={'Creator':'Feishu Message Classification Bench'})
  plt.close(fig)
  families=sorted(rows[0]['by_family']);matrix=np.array([[r['by_family'][f]['correct']/8 for r in rows] for f in families])
  fig,ax=plt.subplots(figsize=(12,8));fig.patch.set_facecolor('#f7fafc');fig.subplots_adjust(left=.23,right=.91,top=.83,bottom=.20)
@@ -110,7 +110,7 @@ def main(lang="en"):
  fig.text(.04,.935,'Where do workflow decisions fail?',fontsize=25,fontweight='bold');fig.text(.04,.882,'Per-family exact label matches · first frozen repeat · 8 synthetic cases per family',fontsize=11,color='#637786')
  fig.text(.04,.075,'No statistical independence or generalization claim. Read the full methodology and every prediction in the repository.',fontsize=10,color='#637786')
  localize(fig,lang)
- for suffix in ['png','svg']:fig.savefig(ROOT/f"assets/scenario-breakdown{'-zh' if lang=='zh' else ''}.{suffix}",dpi=170,metadata={'Creator':'Chinese Workflow Decision Bench'})
+ for suffix in ['png','svg']:fig.savefig(ROOT/f"assets/scenario-breakdown{'-zh' if lang=='zh' else ''}.{suffix}",dpi=170,metadata={'Creator':'Feishu Message Classification Bench'})
  plt.close(fig)
  if lang=='zh':chinese_table(rows)
 if __name__=='__main__':
