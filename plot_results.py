@@ -11,7 +11,7 @@ plt.rcParams.update({'font.family':'DejaVu Sans','font.size':11,'svg.fonttype':'
 
 ZH = {
  'CHINESE WORKFLOW DECISION BENCH':'中文工作流分类基准 · CWDB-64',
- 'Can a classifier assign the right work?':'AI 能分清谁该做、该不该做、急不急吗？',
+ 'Can a classifier assign the right work?':'Jev vs Laya， 闭源分类器API与开源本地部署实测对比。',
  'v1  /  64 frozen synthetic scenarios  /  8 workflow families  /  768 timed requests':'v1  /  64 个冻结合成场景  /  8 类工作情境  /  768 次计时请求',
  'Accuracy ↑':'分类准确率 ↑', 'False actions ↓':'误生成任务数 ↓', 'Request latency ↓':'请求耗时 ↓',
  'Jev 1.13 · choice':'Jev 1.13 · 单选择题', 'Jev 1.13 · four-noul':'Jev 1.13 · 四问组合',
