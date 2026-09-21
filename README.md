@@ -131,3 +131,12 @@ python evaluate.py --adapter my_classifier:create --model-id my-model-v1 \
 [中文成绩图 PNG](assets/scorecard-zh.png) · [中文表格 PNG](assets/comparison-table-zh.png) · [中文分项图 PNG](assets/scenario-breakdown-zh.png) · [英文成绩图](assets/scorecard.png)
 
 中文图表生成：`python plot_results.py --lang zh`。需安装冬青黑体（macOS）或 Noto Sans CJK（Linux）；SVG 已将文字转为路径，查看时无需安装字体。
+
+## 小红书 / 手机竖版（3:4）
+
+两张均为1440×1920，数据由冻结summary自动生成。建议先发成绩图，再发表格说明。
+
+- [第1张：成绩总览 PNG](assets/xiaohongshu-scorecard-3x4.png) · [SVG](assets/xiaohongshu-scorecard-3x4.svg)
+- [第2张：中文对照表 PNG](assets/xiaohongshu-table-3x4.png) · [SVG](assets/xiaohongshu-table-3x4.svg)
+
+复现：`python plot_social.py`（依赖与中文版图表相同）。
