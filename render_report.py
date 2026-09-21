@@ -45,3 +45,14 @@ if start in readme:
 lines[lines.index('## 结论及边界'):lines.index('## 结论及边界')]=['## 中文速览','']+quick+['']
 
 (p/'RESULTS.md').write_text('\n'.join(lines)+'\n')
+
+english=['| Track | Jev correct | Laya correct | Jev median latency | Laya median latency |','|---|---:|---:|---:|---:|']
+for mode,title in [('choice','Choice'),('four_noul','Four-question workflow')]:
+ a,b=s['jev'][mode],s['laya'][mode]
+ english.append(f"| {title} | **{a['correct']}/64 ({a['accuracy']*100:.2f}%)** | {b['correct']}/64 ({b['accuracy']*100:.2f}%) | {a['timing']['p50_ms']:.0f} ms | {b['timing']['p50_ms']:.0f} ms |")
+eng_path=p/'README.en.md'
+if eng_path.exists():
+ content=eng_path.read_text();start='<!-- quick-table-en:start -->';end='<!-- quick-table-en:end -->'
+ if start in content:
+  before,rest=content.split(start,1);_,after=rest.split(end,1)
+  eng_path.write_text(before+start+'\n\n'+'\n'.join(english)+'\n\n'+end+after)

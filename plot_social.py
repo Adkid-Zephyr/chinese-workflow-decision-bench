@@ -1,4 +1,5 @@
 """Two phone-readable 3:4 cards, generated from the frozen result summary."""
+import argparse
 import json
 from pathlib import Path
 import matplotlib
@@ -9,15 +10,22 @@ from matplotlib.font_manager import FontProperties
 ROOT=Path(__file__).resolve().parent
 DPI=160; W,H=1440,1920
 FONT=next((p for p in [Path('/System/Library/Fonts/Hiragino Sans GB.ttc'),Path('/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc')] if p.exists()),None)
-if FONT is None:raise RuntimeError('Install Hiragino Sans GB or Noto Sans CJK.')
+LANG='zh'
 NAVY='#142d40';MUTED='#61798a';BLUE='#2874c8';TEAL='#159b8e';BG='#f4f8fb'
 S=json.loads((ROOT/'results/v1/summary.json').read_text())
 ROWS=[S[b][m] for b,m in [('jev','choice'),('jev','four_noul'),('laya','choice'),('laya','four_noul')]]
 NAMES=['Jev · 单选','Jev · 四问','Laya · 单选','Laya · 四问'];COLORS=[BLUE,BLUE,TEAL,TEAL]
 def canvas():
  fig=plt.figure(figsize=(W/DPI,H/DPI),dpi=DPI,facecolor=BG);ax=fig.add_axes([0,0,1,1]);ax.set_xlim(0,W);ax.set_ylim(H,0);ax.axis('off');return fig,ax
+EN={'Feishu 消息分类实测': 'Feishu message classification', '闭源分类器 API 与开源本地部署实测对比': 'Closed-source API vs open-source local deployment', '64 个合成场景  ·  8 类情境  ·  768 次计时请求': '64 synthetic cases  ·  8 scenario families  ·  768 timed requests', '分类准确率 ↑': 'Classification accuracy ↑', '越高越好': 'Higher is better', '误生成任务数 ↓': 'False task assignments ↓', '越少越好': 'Lower is better', '请求耗时 ↓': 'Request latency ↓', '越低越好': 'Lower is better', 'Jev · 单选': 'Jev · choice', 'Jev · 四问': 'Jev · 4Q', 'Laya · 单选': 'Laya · choice', 'Laya · 四问': 'Laya · 4Q', '虚线：始终猜同一类别的 25% 基线': 'Dashed line: 25% constant-class baseline', '32 条无需行动的消息，被误判为待办或紧急': 'Out of 32 non-action messages, mislabeled as tasks or urgent', '柱长：中位数 p50  ·  横线：p95（不是置信区间）': 'Bar: median p50  ·  whisker: p95 (not a confidence interval)', '准确率取首次冻结结果；三次重复全部公开。': 'Accuracy: first frozen repeat; all three repeats are published.', '每种配置计时 192 次，不含预热。': '192 timed requests per configuration, excluding warmup.', 'Laya 多语言版：M4 GPU 本地；Jev 1.13.0：API，含网络。': 'Laya multilingual: M4 GPU locally. Jev 1.13.0: API incl. network.', '这是不同部署方式的比较，并非同硬件测试。': 'Different deployment paths; not a same-hardware comparison.', 'AI 辅助合成诊断集，不代表真实业务总体准确率或通用能力排名。': 'AI-assisted synthetic diagnostic; not real-world accuracy or a general ranking.', '单选与四问的含义、完整中文表格 → 下一张': 'Choice / 4Q definitions and the full table → README', '数据与复现：Adkid-Zephyr / chinese-workflow-decision-bench': 'Data & code: Adkid-Zephyr / chinese-workflow-decision-bench'}
 def text(ax,x,y,value,size=38,color=NAVY,ha='left'):
- return ax.text(x,y,value,fontproperties=FontProperties(fname=str(FONT),size=size*72/DPI),color=color,va='top',ha=ha)
+ if LANG=='en':
+  value=EN.get(value,value).replace(' 毫秒',' ms')
+  font=FontProperties(family='DejaVu Sans',size=size*72/DPI)
+ else:
+  if FONT is None:raise RuntimeError('Install Hiragino Sans GB or Noto Sans CJK.')
+  font=FontProperties(fname=str(FONT),size=size*72/DPI)
+ return ax.text(x,y,value,fontproperties=font,color=color,va='top',ha=ha)
 def card(ax,y,height):ax.add_patch(FancyBboxPatch((60,y),1320,height,boxstyle='round,pad=0,rounding_size=25',facecolor='white',edgecolor='#e0e9f0',linewidth=1))
 def header(ax,page):
  text(ax,80,60,'Feishu 消息分类实测',38,BLUE);text(ax,1360,67,page+' / 02',30,MUTED,ha='right')
@@ -50,7 +58,7 @@ def scorecard():
  for i,line in enumerate(footer):text(ax,80,1548+i*48,line,30,MUTED)
  text(ax,80,1812,'单选与四问的含义、完整中文表格 → 下一张',34,BLUE)
  text(ax,80,1870,'数据与复现：Adkid-Zephyr / chinese-workflow-decision-bench',24,MUTED)
- save(fig,'xiaohongshu-scorecard-3x4')
+ save(fig,'xiaohongshu-scorecard-3x4'+('-en' if LANG=='en' else ''))
 def tablecard():
  fig,ax=canvas();header(ax,'02')
  for mode,title,top in [('choice','单选择题：直接四选一',390),('four_noul','四问组合：先判断，再按规则分类',840)]:
@@ -71,4 +79,7 @@ def tablecard():
  for i,line in enumerate(notes):text(ax,80,1580+i*47,line,31,MUTED)
  text(ax,80,1870,'数据与复现：Adkid-Zephyr / chinese-workflow-decision-bench',24,MUTED)
  save(fig,'xiaohongshu-table-3x4')
-if __name__=='__main__':scorecard();tablecard()
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--lang',choices=['zh','en'],default='zh');LANG=parser.parse_args().lang
+ scorecard()
+ if LANG=='zh':tablecard()

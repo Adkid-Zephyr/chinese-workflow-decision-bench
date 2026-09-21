@@ -1,10 +1,12 @@
 # Feishu 消息分类 Benchmark
 
+**简体中文** · [English](README.en.md)
+
 一个面向 Feishu（飞书）消息场景的可复用分类 benchmark。固定输入、提示与标签，分别报告分类质量、误生成任务和真实调用延迟。Jev与Laya是首批参测模型。
 
-![Feishu 消息分类成绩图](assets/scorecard-zh.png)
+<img src="assets/xiaohongshu-scorecard-3x4.png" width="480" alt="Feishu 消息分类成绩图，3:4 竖版">
 
-[完整成绩](RESULTS.md) · [原因分析与环境排查](docs/ANALYSIS.md) · [接入其他分类器](docs/ADDING_MODELS.md) · [可下载SVG](assets/scorecard-zh.svg)
+[完整成绩](RESULTS.md) · [原因分析与环境排查](docs/ANALYSIS.md) · [接入其他分类器](docs/ADDING_MODELS.md) · [竖版 SVG](assets/xiaohongshu-scorecard-3x4.svg)
 
 > 已做小规模环境复查：8例 × 2种提示，CPU与MPS的16次标签和返回概率一致；权重哈希匹配。不能据此证明Jev的预训练更强，详见分析报告。
 
@@ -26,6 +28,8 @@
 <!-- quick-table-zh:end -->
 
 完整汇总见 [RESULTS.md](RESULTS.md)，机器可读指标见 [summary.json](results/v1/summary.json)，逐条结果见 [comparison.csv](results/v1/comparison.csv)。原始响应、耗时、重复编号和截断诊断保留在 [results/v1](results/v1)。
+
+<img src="assets/xiaohongshu-table-3x4.png" width="480" alt="Feishu 消息分类中文对照表，3:4 竖版">
 
 ## 场景分项
 
