@@ -17,14 +17,14 @@ def quality(rows):
  nonaction=[r for r in rows if r['expected'] in ['valuable','noise']];action=[r for r in rows if r['expected'] in ['urgent','todo']]
  urgent=[r for r in rows if r['expected']=='urgent']
  return {'n':n,'correct':correct,'accuracy':correct/n if n else None,'errors':n-len(ok),'macro_f1':statistics.mean(f1),'false_action_count':sum(r.get('predicted') in ['urgent','todo'] for r in nonaction),'nonaction_denominator':len(nonaction),'missed_action_count':sum(r.get('predicted') not in ['urgent','todo'] for r in action),'action_denominator':len(action),'urgent_recalled':sum(r.get('predicted')=='urgent' for r in urgent),'urgent_denominator':len(urgent),'confusion_matrix':matrix}
-def summarize(rows):
+def summarize(rows,expected_repeats=3):
  first=[r for r in rows if r['repeat']==0];result=quality(first);success=[r for r in rows if r['status']=='ok'];times=[r['elapsed_ms'] for r in success]
  result['timing']={'n':len(times),'p50_ms':percentile(times,.5),'p95_ms':percentile(times,.95),'mean_ms':statistics.mean(times) if times else None,'definition':'Client end-to-end wall clock, excluding warmup; p95 uses linear interpolation.'}
  result['total_requests']=len(rows);result['failed_requests']=len(rows)-len(success)
  grouped=collections.defaultdict(list)
  for r in rows:grouped[r['id']].append(r)
- complete=[v for v in grouped.values() if len(v)==3 and all(r['status']=='ok' for r in v)]
- result['repeat_consistency']={'complete_cases':len(complete),'same_label_all_three':sum(len({r['predicted'] for r in v})==1 for v in complete)}
+ complete=[v for v in grouped.values() if len(v)==expected_repeats and all(r['status']=='ok' for r in v)]
+ result['repeat_consistency']={'complete_cases':len(complete),'same_label_all_three' if expected_repeats==3 else 'same_label_all_repeats':sum(len({r['predicted'] for r in v})==1 for v in complete)}
  result['by_family']={family:quality([r for r in first if r['family']==family]) for family in sorted({r['family'] for r in first})}
  result['truncation']={key:sum(r['diagnostics'][key] for r in first) if all(key in r.get('diagnostics',{}) for r in first) else None for key in ['state_truncated','instructions_truncated']}
  if any('lengths' in r.get('diagnostics',{}) for r in first):result['quality_without_truncation']=quality([r for r in first if r['status']=='ok' and not r['diagnostics']['state_truncated'] and not r['diagnostics']['instructions_truncated']])

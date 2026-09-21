@@ -1,12 +1,22 @@
-# Chinese Workflow Decisions: Laya × Jev
+# Chinese Workflow Decision Bench · CWDB-64
 
-一个小规模、可复现的中文工作消息判断测试：不仅看响应速度，也看模型是否把别人的工作、已取消任务、普通截止日期误判成紧急待办。
+一个可复用的中文工作流分类benchmark。固定输入、提示与标签，分别报告分类质量、误生成任务和真实调用延迟。Jev与Laya是首批参测模型。
+
+![CWDB-64 成绩图](assets/scorecard.png)
+
+[完整成绩](RESULTS.md) · [原因分析与环境排查](docs/ANALYSIS.md) · [接入其他分类器](docs/ADDING_MODELS.md) · [可下载SVG](assets/scorecard.svg)
+
+> 已做小规模环境复查：8例 × 2种提示，CPU与MPS的16次标签和返回概率一致；权重哈希匹配。不能据此证明Jev的预训练更强，详见分析报告。
 
 **这是场景化合成诊断集，不是真实群聊转储，不是通用模型排行榜，也不是独立第三方盲测。** 数据和标签由 AI 辅助编写，没有独立多人标注。此前的12例探索影响了测试设计；本仓库64例及所有提示在这次调用模型前冻结，未依据结果修改标签。两种模型均使用同一份请求内容。
 
 ## 结果
 
 完整汇总见 [RESULTS.md](RESULTS.md)，机器可读指标见 [summary.json](results/v1/summary.json)，逐条结果见 [comparison.csv](results/v1/comparison.csv)。原始响应、耗时、重复编号和截断诊断保留在 [results/v1](results/v1)。
+
+## 场景分项
+
+![场景成绩](assets/scenario-breakdown.png)
 
 ## 测什么
 
@@ -89,3 +99,16 @@ Jev脚本交互式隐藏输入密钥，也支持已有的 `TYPESAFE_API_KEY` 环
 - 代码与测试编写、执行和报告整理使用了OpenAI Codex。结果不代表Laya或TypeSafe官方评测。
 
 数据、代码与作者生成的测试记录使用MIT许可；不分发模型权重，上游代码与模型遵循其各自许可。
+
+## 作为其他分类器的benchmark使用
+
+标准choice track支持任意Python adapter，返回类别即可，概率可选；不需要伪装成Jev API。
+
+```bash
+python evaluate.py --adapter my_classifier:create --model-id my-model-v1 \
+  --output results/my-model-v1 --repeats 3
+```
+
+先离线试跑 `adapters.constant:create` 可验证16/64的常量基线。完整协议、失败计分与提交要求见[接入说明](docs/ADDING_MODELS.md)。原有`bench.py`保留为v1两模型记录的复现入口，冻结数据与原始结果没有改动。
+
+成绩图由`python plot_results.py`从真实summary生成，需另装`requirements-viz.txt`。PNG便于分享，SVG便于编辑和高清导出。仓库与Artificial Analysis无关联，也不声称具有其评测覆盖或独立审计规模。

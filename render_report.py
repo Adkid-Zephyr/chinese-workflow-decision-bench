@@ -7,7 +7,7 @@ with (root/'comparison.csv').open('w',newline='') as stream:
  w=csv.writer(stream);w.writerow(['backend','mode','case_id','family','repeat','expected','predicted','status','elapsed_ms','review','request_sha256'])
  for name,rows in allrows.items():
   for r in sorted(rows,key=lambda r:(r['mode'],r['id'],r['repeat'])):w.writerow([name,r['mode'],r['id'],r['family'],r['repeat'],r['expected'],r.get('predicted','ERROR'),r['status'],r.get('elapsed_ms'),r.get('review'),r['request_sha256']])
-lines=['# 测试结果 v1','', '## 结论及边界','本次64个合成工作场景中，Jev对任务归属、状态和上下文的判断更符合冻结标签；Laya单选择题的本地延迟较低，但误生成待办较多。这不是通用模型能力或同硬件速度排名。','', '所有质量数字取预先约定的第0次重复，每模式64例。延迟取3次重复的192个请求；每个后端384次计时请求加2次预热，合计772次调用。全部计时请求成功。','', '|后端 / 提示|匹配预期|Macro-F1|误生成行动 / 32|漏掉行动 / 32|紧急召回 / 16|p50 ms|p95 ms|','|---|---:|---:|---:|---:|---:|---:|---:|']
+lines=['# 测试结果 v1','', '![成绩图](assets/scorecard.png)', '', '[环境排查与原因分析](docs/ANALYSIS.md) · [接入新分类器](docs/ADDING_MODELS.md)', '', '## 结论及边界','本次64个合成工作场景中，Jev对任务归属、状态和上下文的判断更符合冻结标签；Laya单选择题的本地延迟较低，但误生成待办较多。这不是通用模型能力或同硬件速度排名。','', '所有质量数字取预先约定的第0次重复，每模式64例。延迟取3次重复的192个请求；每个后端384次计时请求加2次预热，合计772次调用。全部计时请求成功。','', '|后端 / 提示|匹配预期|Macro-F1|误生成行动 / 32|漏掉行动 / 32|紧急召回 / 16|p50 ms|p95 ms|','|---|---:|---:|---:|---:|---:|---:|---:|']
 for name in ['jev','laya']:
  for mode,r in s[name].items():lines.append(f"|{name} / {mode}|{r['correct']}/64|{r['macro_f1']:.3f}|{r['false_action_count']}/32|{r['missed_action_count']}/32|{r['urgent_recalled']}/16|{r['timing']['p50_ms']:.1f}|{r['timing']['p95_ms']:.1f}|")
 lines+=['','“误生成行动”指预期为valuable/noise却输出urgent/todo；“漏掉行动”指预期urgent/todo却输出非行动或请求失败。紧急召回必须输出urgent。此处优先衡量工作流影响，不仅看整体准确率。','', '## 重复运行','三次使用完全相同输入，打乱运行顺序。下面同时列出三次结果，避免首次得分掩盖波动。','', '|后端 / 提示|第0次|第1次|第2次|三次标签一致|','|---|---:|---:|---:|---:|']
